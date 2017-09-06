@@ -4,11 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import com.zheng.spring.jdbcDemo.model.Circle;
@@ -58,10 +60,26 @@ public class JdbcDaoImpl {
 		return jdbcTemplate.queryForObject(sql, new Object[] {circleId},String.class);
 	}
 
-//	public Circle getCircleForId(int circleId) {
-//		String sql = "select * from circle where id = ?";
-//		jdbcTemplate.queryForObject(sql, new Object[] {circleId}, Circle.class);
-//	}
+	public Circle getCircleForId(int circleId) {
+		String sql = "select * from circle where id = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] {circleId}, new CircleMapper());
+	}
+	
+	public List<Circle> getAllCircles() {
+		String sql = "select * from circle";
+		return jdbcTemplate.query(sql, new CircleMapper());
+	}
+	
+	private static final class CircleMapper implements RowMapper<Circle> {
+
+		public Circle mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+			Circle circle = new Circle();
+			circle.setId(resultSet.getInt("id"));
+			circle.setName(resultSet.getString("name"));
+			return circle;
+		}
+		
+	}
 	
 	@Autowired
 	public void setDataSource(DataSource dataSource) {

@@ -52,7 +52,17 @@ public class JdbcDaoImpl {
 	public DataSource getDataSource() {
 		return dataSource;
 	}
+	
+	public String getCircleName(int circleId) {
+		String sql = "select name from circle where id = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] {circleId},String.class);
+	}
 
+//	public Circle getCircleForId(int circleId) {
+//		String sql = "select * from circle where id = ?";
+//		jdbcTemplate.queryForObject(sql, new Object[] {circleId}, Circle.class);
+//	}
+	
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);

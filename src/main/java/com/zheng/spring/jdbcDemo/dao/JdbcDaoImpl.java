@@ -20,31 +20,31 @@ public class JdbcDaoImpl {
 
 	
 	private DataSource dataSource;
-	private JdbcTemplate jdbcTemplate = new JdbcTemplate();
+	private JdbcTemplate jdbcTemplate;
 
-	public Circle getCircle(int circleId) {
-		Connection conn = null;
-		try {
-			conn = dataSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement("select * from circle where id = ?");
-			ps.setInt(1, circleId);
-			Circle circle = null;
-			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
-				circle = new Circle(circleId, rs.getString("name"));
-			}
-			rs.close();
-			ps.close();
-			return circle;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-			}
-		}
-	}
+//	public Circle getCircle(int circleId) {
+//		Connection conn = null;
+//		try {
+//			conn = dataSource.getConnection();
+//			PreparedStatement ps = conn.prepareStatement("select * from circle where id = ?");
+//			ps.setInt(1, circleId);
+//			Circle circle = null;
+//			ResultSet rs = ps.executeQuery();
+//			if (rs.next()) {
+//				circle = new Circle(circleId, rs.getString("name"));
+//			}
+//			rs.close();
+//			ps.close();
+//			return circle;
+//		} catch (Exception e) {
+//			throw new RuntimeException(e);
+//		} finally {
+//			try {
+//				conn.close();
+//			} catch (SQLException e) {
+//			}
+//		}
+//	}
 
 	public int getCircleCount() {
 		String sql = "SELECT COUNT(*) from CIRCLE";
@@ -79,6 +79,17 @@ public class JdbcDaoImpl {
 			return circle;
 		}
 		
+	}
+	
+	public void insertCircle(Circle circle) {
+		String sql = "insert into circle (id, name) values (?,?)";
+		jdbcTemplate.update(sql, new Object[] {circle.getId(), circle.getName()});
+	}
+	
+	// just for example, normally it should be part of a initialization script
+	public void createTriangleTable() {
+		String sql = "create table triangle (id integer, name varchar(50))";
+		jdbcTemplate.execute(sql);
 	}
 	
 	@Autowired
